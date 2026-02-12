@@ -25,6 +25,7 @@ body {
   box-shadow: 0 15px 40px rgba(0,0,0,0.2);
   width: 90%;
   max-width: 400px;
+  z-index: 2;
 }
 
 h1 {
@@ -51,11 +52,11 @@ button {
   background-color: #ccc;
 }
 
-img {
+#valentineImage {
   width: 100%;
   border-radius: 20px;
   margin-bottom: 15px;
-  display: none; /* unsichtbar, bis Yes geklickt wird */
+  display: none; /* unsichtbar bis Klick */
 }
 
 .heart {
@@ -64,14 +65,29 @@ img {
 }
 
 @keyframes floatUp {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-800px) scale(1.8);
-    opacity: 0;
-  }
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-800px) scale(1.8); opacity: 0; }
+}
+
+/* Herz-PNG Pop-Up */
+#popupHeart {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0); /* Start klein in Mitte */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: transform 1.5s ease;
+  display: none; /* unsichtbar bis Klick */
+}
+
+#popupHeart img {
+  width: 300px; /* Passe Größe des PNGs an */
+  max-width: 90vw;
+  height: auto;
 }
 </style>
 </head>
@@ -79,8 +95,8 @@ img {
 <body>
 
 <div class="container" id="card">
-  <!-- Bild wird erst nach Klick auf Yes sichtbar -->
-  <img id="valentineImage" src="meinbild.jpg" alt="Cute Image">
+  <!-- Hauptbild -->
+  <img id="valentineImage" src="meinbild.jpg" alt="Mein Valentine Bild">
 
   <h1 id="question">Will you be my Valentine? 💖</h1>
 
@@ -90,12 +106,18 @@ img {
   </div>
 </div>
 
+<!-- Herz-PNG Pop-Up -->
+<div id="popupHeart">
+  <img src="herze2.png" alt="Herz mit Text">
+</div>
+
 <script>
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const question = document.getElementById("question");
 const buttons = document.getElementById("buttons");
-const image = document.getElementById("valentineImage");
+const valentineImage = document.getElementById("valentineImage");
+const popupHeart = document.getElementById("popupHeart");
 
 let size = 16;
 
@@ -106,36 +128,38 @@ noBtn.addEventListener("click", function() {
 });
 
 yesBtn.addEventListener("click", function() {
-  // Buttons verschwinden
+  // Buttons weg
   buttons.style.display = "none";
 
-  // Text groß machen
+  // Text groß
   question.innerText = "YAAAAY 💖✨";
   question.style.fontSize = "40px";
 
-  // Bild anzeigen
-  image.style.display = "block";
+  // Hauptbild anzeigen
+  valentineImage.style.display = "block";
 
-  // Herz-Animation
+  // Herz-Animationen fliegend
   for (let i = 0; i < 40; i++) {
     let heart = document.createElement("div");
     heart.classList.add("heart");
     heart.innerHTML = "💖";
-
     heart.style.left = Math.random() * window.innerWidth + "px";
     heart.style.bottom = "-20px";
     heart.style.fontSize = (Math.random() * 30 + 20) + "px";
-
     document.body.appendChild(heart);
-
-    setTimeout(() => {
-      heart.remove();
-    }, 4000);
+    setTimeout(() => heart.remove(), 4000);
   }
+
+  // Nach 7 Sekunden das Herz-PNG einblenden
+  setTimeout(() => {
+    popupHeart.style.display = "flex";
+    // Sanft aus der Mitte wachsen
+    setTimeout(() => {
+      popupHeart.style.transform = "translate(-50%, -50%) scale(1.9)";
+    }, 50);
+  }, 7000);
 });
 </script>
 
 </body>
 </html>
-
-
